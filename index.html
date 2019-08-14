@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Glow ball</title>
+    <link rel="stylesheet" type="text/css" href="index.css" />
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"
+    />
+  </head>
+  <body>
+    <script src="three.min.js"></script>
+    <script src="OrbitControls.js"></script>
+    <script src="perlin.js"></script>
+    <script src="FresnelShader.js"></script>
+    
+
+    <script id="vertexShader" type="x-shader/x-vertex">
+        varying vec2 vN;
+
+      void main() {
+
+        vec4 p = vec4( position, 1. );
+
+        vec3 e = normalize( vec3( modelViewMatrix * p ) );
+        vec3 n = normalize( normalMatrix * normal );
+
+        vec3 r = reflect( e, n );
+        float m = 2. * sqrt(
+          pow( r.x, 2. ) +
+          pow( r.y, 2. ) +
+          pow( r.z + 1., 2. )
+        );
+        vN = r.xy / m + .5;
+
+        gl_Position = projectionMatrix * modelViewMatrix * p;
+      }
+    </script>
+
+    <script id="fragmentShader" type="x-shader/x-fragment">
+      uniform sampler2D tMatCap;
+
+      varying vec2 vN;
+
+      void main() {
+
+        vec3 base = texture2D( tMatCap, vN ).rgb;
+        gl_FragColor = vec4( base, 1. );
+
+      }
+    </script>
+
+    <script src="index.js"></script>
+  </body>
+</html>
