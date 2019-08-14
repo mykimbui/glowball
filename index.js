@@ -31,6 +31,8 @@ document.body.appendChild(renderer.domElement);
 var controls = new THREE.OrbitControls(camera, renderer.domElement);
 controls.update();
 
+var group = new THREE.Object3D();
+
 var geometry = new THREE.SphereGeometry(10, 128, 128);
 
 // var shader = THREE.FresnelShader;
@@ -54,7 +56,7 @@ var material = new THREE.ShaderMaterial({
 var sphere = new THREE.Mesh(geometry, material);
 // scene.add(sphere);
 
-var topgeometry = new THREE.SphereGeometry(10, 128, 128);
+var topgeometry = new THREE.SphereGeometry(12, 128, 128);
 var topmaterial = new THREE.MeshBasicMaterial({
   color: 0xffffff,
   transparent: true,
@@ -62,9 +64,13 @@ var topmaterial = new THREE.MeshBasicMaterial({
 });
 
 var topsphere = new THREE.Mesh(topgeometry, topmaterial);
-scene.add(topsphere);
+// scene.add(topsphere);
 
-console.log(topsphere)
+// console.log(topsphere)
+group.add(sphere)
+group.add(topsphere)
+
+scene.add(group);
 
 camera.position.z = 5;
 
