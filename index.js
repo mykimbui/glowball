@@ -93,6 +93,8 @@ function onDocumentMouseMove(event) {
 }
 
 let k = 3;
+let a = 0;
+let g = 2;
 
 const update = function() {
   const time = performance.now() * 0.001;
@@ -103,14 +105,16 @@ const update = function() {
       1 + 0.05 * noise.perlin3(p.x * k + time, p.y * k, p.z * k)
     );
     d.normalize().multiplyScalar(
-      1.1 + 0.05 * noise.perlin3(p.x * k + time, p.y * k, p.z * k)
+      1.15 + a + 0.08 * noise.perlin3(p.x * g + time, p.y * g, p.z * g)
     );
   }
 };
 
 topsphere.on("click", function() {
   k += 1;
-  console.log(k);
+  a += 0.1;
+  g += 2;
+  console.log(a);
 });
 
 const animate = function() {
