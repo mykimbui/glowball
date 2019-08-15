@@ -1,5 +1,5 @@
-import { Scene, PerspectiveCamera, WebGLRenderer, Mesh, BoxGeometry, MeshBasicMaterial } from 'three';
-import { Interaction } from 'three.interaction';
+// import { Scene, PerspectiveCamera, WebGLRenderer, Mesh, BoxGeometry, MeshBasicMaterial } from 'three';
+// import { Interaction } from 'three.interaction';
 
 // const path = "textures/";
 // const format = '.jpg';
@@ -15,11 +15,11 @@ import { Interaction } from 'three.interaction';
 const scene = new THREE.Scene();
 // scene.background = textureCube;
 
-const interaction = new Interaction(renderer, scene, camera);
+// const interaction = new Interaction(renderer, scene, camera);
 
 
-const windowHalfX = window.innerWidth / 2;
-const windowHalfY = window.innerHeight / 2;
+var windowHalfX = window.innerWidth / 2;
+var windowHalfY = window.innerHeight / 2;
 
 scene.background = new THREE.Color(0x13003b);
 
@@ -62,9 +62,9 @@ const material = new THREE.ShaderMaterial({
 const sphere = new THREE.Mesh(geometry, material);
 // scene.add(sphere);
 
-const topgeometry = new THREE.SphereGeometry(5, 32, 32);
+const topgeometry = new THREE.SphereGeometry(7, 32, 32);
 const topmaterial = new THREE.MeshBasicMaterial({
-  color: 0xffffff,
+  color: 0xffff00,
   transparent: true,
   opacity: 0.2
 });
@@ -72,7 +72,7 @@ const topmaterial = new THREE.MeshBasicMaterial({
 const topsphere = new THREE.Mesh(topgeometry, topmaterial);
 // scene.add(topsphere);
 
-topsphere.position.z = -5
+topsphere.position.z = 0
 
 // console.log(topsphere)
 group.add(sphere)
@@ -101,33 +101,18 @@ function onDocumentMouseMove(event) {
 const time = performance.now() * 0.01;
 
 const update = function() {
-  const k = 2;
-  for (const i = 0; i < sphere.geometry.vertices.length; i++) {
-    const p = sphere.geometry.vertices[i];
+  let k = 2;
+  for (let i = 0; i < sphere.geometry.vertices.length; i++) {
+    let p = sphere.geometry.vertices[i];
+    let d = topsphere.geometry.vertices[i];
     p.normalize().multiplyScalar(
       1 + 0.05 * noise.perlin3(p.x * k + time, p.y * k, p.z * k)
     );
-  }
-
-  for (const i = 0; i < topsphere.geometry.vertices.length; i++) {
-    const p = topsphere.geometry.vertices[i];
-    p.normalize().multiplyScalar(
+    d.normalize().multiplyScalar(
       1 + 0.05 * noise.perlin3(p.x * k + time, p.y * k, p.z * k)
     );
   }
 };
-
-sphere.on('click', function(a) {
-  a = 0
-  a++
-  const k = 2;
-  for (const i = 0; i < sphere.geometry.vertices.length; i++) {
-    const p = sphere.geometry.vertices[i];
-    p.normalize().multiplyScalar(
-      1 + 0.05 + a * noise.perlin3(p.x * k + time, p.y * k, p.z * k)
-    );
-  }
-});
 
 
 const animate = function() {
@@ -146,6 +131,7 @@ const animate = function() {
   topsphere.geometry.verticesNeedUpdate = true;
 
   sphere.rotation.y += 0.015;
+  // topsphere.rotation.y += 0.015;
 
   renderer.render(scene, camera);
 };
