@@ -1,48 +1,54 @@
-// var path = "textures/";
-// var format = '.jpg';
-// var urls = [
+import { Scene, PerspectiveCamera, WebGLRenderer, Mesh, BoxGeometry, MeshBasicMaterial } from 'three';
+import { Interaction } from 'three.interaction';
+
+// const path = "textures/";
+// const format = '.jpg';
+// const urls = [
 // path + 'px' + format, path + 'nx' + format,
 // path + 'py' + format, path + 'ny' + format,
 // path + 'pz' + format, path + 'nz' + format
 // ];
 
-// var textureCube = new THREE.CubeTextureLoader().load( urls );
+// const textureCube = new THREE.CubeTextureLoader().load( urls );
 // textureCube.format = THREE.RGBFormat;
 
-var scene = new THREE.Scene();
+const scene = new THREE.Scene();
 // scene.background = textureCube;
 
-var windowHalfX = window.innerWidth / 2;
-var windowHalfY = window.innerHeight / 2;
+const interaction = new Interaction(renderer, scene, camera);
+
+
+const windowHalfX = window.innerWidth / 2;
+const windowHalfY = window.innerHeight / 2;
 
 scene.background = new THREE.Color(0x13003b);
 
-var camera = new THREE.PerspectiveCamera(
+const camera = new THREE.PerspectiveCamera(
   70,
   window.innerWidth / window.innerHeight,
   0.1,
   1000
 );
 
-var renderer = new THREE.WebGLRenderer();
+const renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
-var controls = new THREE.OrbitControls(camera, renderer.domElement);
+const controls = new THREE.OrbitControls(camera, renderer.domElement);
 controls.update();
 
-var group = new THREE.Object3D();
+const group = new THREE.Object3D();
 
-var geometry = new THREE.SphereGeometry(5, 32, 32);
+const geometry = new THREE.SphereGeometry(5, 32, 32);
 
-// var shader = THREE.FresnelShader;
-// var uniforms = THREE.UniformsUtils.clone(shader.uniforms);
+// const shader = THREE.FresnelShader;
+// const uniforms = THREE.UniformsUtils.clone(shader.uniforms);
 
-var loader = new THREE.TextureLoader();
+const loader = new THREE.TextureLoader();
 loader.setCrossOrigin("");
-var matcap = loader.load("matcap2.jpg");
+const matcap = loader.load("matcap2.jpg");
 
-var material = new THREE.ShaderMaterial({
+const material = new THREE.ShaderMaterial({
   transparent: true,
   side: THREE.DoubleSide,
   uniforms: {
@@ -53,20 +59,20 @@ var material = new THREE.ShaderMaterial({
   flatShading: THREE.SmoothShading
 });
 
-var sphere = new THREE.Mesh(geometry, material);
+const sphere = new THREE.Mesh(geometry, material);
 // scene.add(sphere);
 
-var topgeometry = new THREE.SphereGeometry(8, 32, 32);
-var topmaterial = new THREE.MeshBasicMaterial({
+const topgeometry = new THREE.SphereGeometry(5, 32, 32);
+const topmaterial = new THREE.MeshBasicMaterial({
   color: 0xffffff,
   transparent: true,
   opacity: 0.2
 });
 
-var topsphere = new THREE.Mesh(topgeometry, topmaterial);
+const topsphere = new THREE.Mesh(topgeometry, topmaterial);
 // scene.add(topsphere);
 
-topsphere.position.z = -15
+topsphere.position.z = -5
 
 // console.log(topsphere)
 group.add(sphere)
@@ -92,26 +98,39 @@ function onDocumentMouseMove(event) {
   mouseY = (event.clientY - windowHalfY) * 10;
 }
 
-var time = performance.now() * 0.01;
+const time = performance.now() * 0.01;
 
-var update = function() {
-  var k = 2;
-  for (var i = 0; i < sphere.geometry.vertices.length; i++) {
-    var p = sphere.geometry.vertices[i];
+const update = function() {
+  const k = 2;
+  for (const i = 0; i < sphere.geometry.vertices.length; i++) {
+    const p = sphere.geometry.vertices[i];
     p.normalize().multiplyScalar(
       1 + 0.05 * noise.perlin3(p.x * k + time, p.y * k, p.z * k)
     );
   }
 
-  for (var i = 0; i < topsphere.geometry.vertices.length; i++) {
-    var p = topsphere.geometry.vertices[i];
+  for (const i = 0; i < topsphere.geometry.vertices.length; i++) {
+    const p = topsphere.geometry.vertices[i];
     p.normalize().multiplyScalar(
       1 + 0.05 * noise.perlin3(p.x * k + time, p.y * k, p.z * k)
     );
   }
 };
 
-var animate = function() {
+sphere.on('click', function(a) {
+  a = 0
+  a++
+  const k = 2;
+  for (const i = 0; i < sphere.geometry.vertices.length; i++) {
+    const p = sphere.geometry.vertices[i];
+    p.normalize().multiplyScalar(
+      1 + 0.05 + a * noise.perlin3(p.x * k + time, p.y * k, p.z * k)
+    );
+  }
+});
+
+
+const animate = function() {
   requestAnimationFrame(animate);
 
   update();
