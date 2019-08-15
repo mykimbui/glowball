@@ -5,7 +5,7 @@ var windowHalfY = window.innerHeight / 2;
 scene.background = new THREE.Color(0x13003b);
 
 const camera = new THREE.PerspectiveCamera(
-  70,
+  50,
   window.innerWidth / window.innerHeight,
   0.1,
   1000
@@ -27,7 +27,7 @@ scene.add(pointLight);
 
 const group = new THREE.Object3D();
 
-const geometry = new THREE.SphereGeometry(0.1, 32, 32);
+const geometry = new THREE.SphereGeometry(1, 32, 32);
 
 const loader = new THREE.TextureLoader();
 loader.setCrossOrigin("");
@@ -49,19 +49,22 @@ const material = new THREE.ShaderMaterial({
 
 const sphere = new THREE.Mesh(geometry, material);
 
-const topgeometry = new THREE.SphereGeometry(15, 32, 32);
+const topgeometry = new THREE.SphereGeometry(1, 32, 32);
 const topmaterial = new THREE.ShaderMaterial({
   uniforms: {
     tMatCap: { type: "t", value: matcaptop }
   },
   fragmentShader: document.getElementById("fragmentShader").textContent,
-  vertexShader: document.getElementById("vertexShader").textContent
+  vertexShader: document.getElementById("vertexShader").textContent,
+  transparent: true,
+  blending: THREE.AdditiveBlending
 });
 
 
 const topsphere = new THREE.Mesh(topgeometry, topmaterial);
+topsphere.material.side = THREE.DoubleSide;
 
-topsphere.position.x = 2;
+topsphere.position.z = 0;
 
 group.add(sphere);
 group.add(topsphere);
@@ -100,12 +103,12 @@ const update = function() {
       1 + 0.05 * noise.perlin3(p.x * k + time, p.y * k, p.z * k)
     );
     d.normalize().multiplyScalar(
-      1 + 0.05 * noise.perlin3(p.x * k + time, p.y * k, p.z * k)
+      1.1 + 0.05 * noise.perlin3(p.x * k + time, p.y * k, p.z * k)
     );
   }
 };
 
-sphere.on("click", function() {
+topsphere.on("click", function() {
   k += 1;
   console.log(k);
 });
@@ -126,7 +129,7 @@ const animate = function() {
   topsphere.geometry.verticesNeedUpdate = true;
 
   sphere.rotation.y += 0.01;
-  topsphere.rotation.y += 0.015;
+  topsphere.rotation.y += 0.03;
 
   renderer.render(scene, camera);
 };
