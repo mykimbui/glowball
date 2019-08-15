@@ -18,7 +18,7 @@ var windowHalfY = window.innerHeight / 2;
 scene.background = new THREE.Color(0x13003b);
 
 var camera = new THREE.PerspectiveCamera(
-  40,
+  70,
   window.innerWidth / window.innerHeight,
   0.1,
   1000
@@ -33,7 +33,7 @@ controls.update();
 
 var group = new THREE.Object3D();
 
-var geometry = new THREE.SphereGeometry(10, 128, 128);
+var geometry = new THREE.SphereGeometry(5, 32, 32);
 
 // var shader = THREE.FresnelShader;
 // var uniforms = THREE.UniformsUtils.clone(shader.uniforms);
@@ -56,15 +56,17 @@ var material = new THREE.ShaderMaterial({
 var sphere = new THREE.Mesh(geometry, material);
 // scene.add(sphere);
 
-var topgeometry = new THREE.SphereGeometry(12, 128, 128);
+var topgeometry = new THREE.SphereGeometry(8, 32, 32);
 var topmaterial = new THREE.MeshBasicMaterial({
   color: 0xffffff,
   transparent: true,
-  opacity: 1
+  opacity: 0.2
 });
 
 var topsphere = new THREE.Mesh(topgeometry, topmaterial);
 // scene.add(topsphere);
+
+topsphere.position.z = -15
 
 // console.log(topsphere)
 group.add(sphere)
@@ -72,7 +74,7 @@ group.add(topsphere)
 
 scene.add(group);
 
-camera.position.z = 5;
+camera.position.z = -5;
 
 function onWindowResize() {
   windowHalfX = window.innerWidth / 2;
@@ -100,6 +102,13 @@ var update = function() {
       1 + 0.05 * noise.perlin3(p.x * k + time, p.y * k, p.z * k)
     );
   }
+
+  for (var i = 0; i < topsphere.geometry.vertices.length; i++) {
+    var p = topsphere.geometry.vertices[i];
+    p.normalize().multiplyScalar(
+      1 + 0.05 * noise.perlin3(p.x * k + time, p.y * k, p.z * k)
+    );
+  }
 };
 
 var animate = function() {
@@ -112,6 +121,10 @@ var animate = function() {
   sphere.geometry.computeVertexNormals();
   sphere.geometry.normalsNeedUpdate = true;
   sphere.geometry.verticesNeedUpdate = true;
+
+  topsphere.geometry.computeVertexNormals();
+  topsphere.geometry.normalsNeedUpdate = true;
+  topsphere.geometry.verticesNeedUpdate = true;
 
   sphere.rotation.y += 0.015;
 
