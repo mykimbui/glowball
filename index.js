@@ -35,7 +35,7 @@ controls.update();
 
 const group = new THREE.Object3D();
 
-const geometry = new THREE.SphereGeometry(5, 15, 15);
+const geometry = new THREE.SphereGeometry(5, 32, 32);
 
 // const shader = THREE.FresnelShader;
 // const uniforms = THREE.UniformsUtils.clone(shader.uniforms);
@@ -57,7 +57,7 @@ const material = new THREE.ShaderMaterial({
 
 const sphere = new THREE.Mesh(geometry, material);
 
-const topgeometry = new THREE.SphereGeometry(15, 15, 15, 0, 6.3, 0, 2.3);
+const topgeometry = new THREE.SphereGeometry(15, 32, 32, 0, 6.3, 0, 2.3);
 const topmaterial = new THREE.MeshBasicMaterial({
   color: 0xffffff,
   transparent: true,
@@ -94,10 +94,11 @@ function onDocumentMouseMove(event) {
   mouseY = (event.clientY - windowHalfY) * 10;
 }
 
-const time = performance.now() * 0.01;
-
 const update = function() {
-  let k = 2;
+  const time = performance.now() * 0.001;
+
+  let k = 10;
+
   for (let i = 0; i < sphere.geometry.vertices.length; i++) {
     let p = sphere.geometry.vertices[i];
     let d = topsphere.geometry.vertices[i];
@@ -110,23 +111,25 @@ const update = function() {
   }
 };
 
-// sphere.on("click", function() {
-//   let nums = [1, 2, 3, 4, 5];
-//   for (var a = 0; a < nums.length; a++) {
-//     let k = 2;
+sphere.on("click", function() {
+    const time = performance.now() * 0.001;
 
-//     for (let i = 0; i < sphere.geometry.vertices.length; i++) {
-//       let p = sphere.geometry.vertices[i];
-//       let d = topsphere.geometry.vertices[i];
-//       p.normalize().multiplyScalar(
-//         1 + 0.05 * noise.perlin3(p.x * k + time, p.y * k, p.z * k * a)
-//       );
-//       d.normalize().multiplyScalar(
-//         1 + 0.05 * a * noise.perlin3(p.x * k + time, p.y * k, p.z * k)
-//       );
-//     }
-//   }
-// });
+    let k = 0;
+    k++
+    console.log(k++)
+
+    for (let i = 0; i < sphere.geometry.vertices.length; i++) {
+      let p = sphere.geometry.vertices[i];
+      let d = topsphere.geometry.vertices[i];
+      p.normalize().multiplyScalar(
+        1 + 0.05 * noise.perlin3(p.x * k + time, p.y * k, p.z * k)
+      );
+      d.normalize().multiplyScalar(
+        1 + 0.05 * noise.perlin3(p.x * k + time, p.y * k, p.z * k)
+      );
+    }
+
+});
 
 const animate = function() {
   requestAnimationFrame(animate);
@@ -143,7 +146,7 @@ const animate = function() {
   // topsphere.geometry.normalsNeedUpdate = true;
   // topsphere.geometry.verticesNeedUpdate = true;
 
-  sphere.rotation.y += 0.015;
+  sphere.rotation.y += 0.01;
   // topsphere.rotation.y += 0.015;
 
   renderer.render(scene, camera);
