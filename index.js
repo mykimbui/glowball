@@ -14,10 +14,6 @@
 
 const scene = new THREE.Scene();
 // scene.background = textureCube;
-
-// const interaction = new Interaction(renderer, scene, camera);
-
-
 var windowHalfX = window.innerWidth / 2;
 var windowHalfY = window.innerHeight / 2;
 
@@ -33,13 +29,13 @@ const camera = new THREE.PerspectiveCamera(
 const renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
-
+const interaction = new THREE.Interaction(renderer, scene, camera);
 const controls = new THREE.OrbitControls(camera, renderer.domElement);
 controls.update();
 
 const group = new THREE.Object3D();
 
-const geometry = new THREE.SphereGeometry(5, 32, 32);
+const geometry = new THREE.SphereGeometry(5, 15, 15);
 
 // const shader = THREE.FresnelShader;
 // const uniforms = THREE.UniformsUtils.clone(shader.uniforms);
@@ -60,27 +56,27 @@ const material = new THREE.ShaderMaterial({
 });
 
 const sphere = new THREE.Mesh(geometry, material);
-// scene.add(sphere);
 
-const topgeometry = new THREE.SphereGeometry(7, 32, 32);
+const topgeometry = new THREE.SphereGeometry(15, 15, 15, 0, 6.3, 0, 2.3);
 const topmaterial = new THREE.MeshBasicMaterial({
-  color: 0xffff00,
+  color: 0xffffff,
   transparent: true,
   opacity: 0.2
 });
 
 const topsphere = new THREE.Mesh(topgeometry, topmaterial);
-// scene.add(topsphere);
 
-topsphere.position.z = 0
+topsphere.position.z = 0;
 
-// console.log(topsphere)
-group.add(sphere)
-group.add(topsphere)
+group.add(sphere);
+group.add(topsphere);
 
 scene.add(group);
 
 camera.position.z = -5;
+
+topsphere.cursor = "pointer";
+sphere.cursor = "pointer";
 
 function onWindowResize() {
   windowHalfX = window.innerWidth / 2;
@@ -114,6 +110,23 @@ const update = function() {
   }
 };
 
+// sphere.on("click", function() {
+//   let nums = [1, 2, 3, 4, 5];
+//   for (var a = 0; a < nums.length; a++) {
+//     let k = 2;
+
+//     for (let i = 0; i < sphere.geometry.vertices.length; i++) {
+//       let p = sphere.geometry.vertices[i];
+//       let d = topsphere.geometry.vertices[i];
+//       p.normalize().multiplyScalar(
+//         1 + 0.05 * noise.perlin3(p.x * k + time, p.y * k, p.z * k * a)
+//       );
+//       d.normalize().multiplyScalar(
+//         1 + 0.05 * a * noise.perlin3(p.x * k + time, p.y * k, p.z * k)
+//       );
+//     }
+//   }
+// });
 
 const animate = function() {
   requestAnimationFrame(animate);
@@ -126,9 +139,9 @@ const animate = function() {
   sphere.geometry.normalsNeedUpdate = true;
   sphere.geometry.verticesNeedUpdate = true;
 
-  topsphere.geometry.computeVertexNormals();
-  topsphere.geometry.normalsNeedUpdate = true;
-  topsphere.geometry.verticesNeedUpdate = true;
+  // topsphere.geometry.computeVertexNormals();
+  // topsphere.geometry.normalsNeedUpdate = true;
+  // topsphere.geometry.verticesNeedUpdate = true;
 
   sphere.rotation.y += 0.015;
   // topsphere.rotation.y += 0.015;
