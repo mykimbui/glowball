@@ -22,7 +22,7 @@ const ambientLight = new THREE.AmbientLight(0xffffff);
 scene.add(ambientLight);
 
 const pointLight = new THREE.PointLight(0xff0000);
-pointLight.position.set( 50, 50, 50 );
+pointLight.position.set(50, 50, 50);
 scene.add(pointLight);
 
 const group = new THREE.Object3D();
@@ -33,7 +33,6 @@ const loader = new THREE.TextureLoader();
 loader.setCrossOrigin("");
 const matcap = loader.load("matcap2.jpg");
 const matcaptop = loader.load("matcap-top.png");
-
 
 const material = new THREE.ShaderMaterial({
   transparent: true,
@@ -60,14 +59,30 @@ const topmaterial = new THREE.ShaderMaterial({
   blending: THREE.AdditiveBlending
 });
 
-
 const topsphere = new THREE.Mesh(topgeometry, topmaterial);
 topsphere.material.side = THREE.DoubleSide;
 
-topsphere.position.z = 0;
+var customMaterial = new THREE.ShaderMaterial({
+  uniforms: {
+    c: { type: "f", value: 0.3 },
+    p: { type: "f", value: 1.3 },
+    glowColor: { type: "c", value: new THREE.Color(0xba00c2) },
+    viewVector: { type: "v3", value: camera.position }
+  },
+  vertexShader: document.getElementById("gvertexShader").textContent,
+  fragmentShader: document.getElementById("gfragmentShader").textContent,
+  side: THREE.BackSide,
+  blending: THREE.AdditiveBlending,
+  transparent: true
+});
+
+var glowMesh = new THREE.Mesh(geometry, customMaterial.clone());
+glowMesh.position = sphere.position;
+glowMesh.scale.multiplyScalar(1.21);
 
 group.add(sphere);
 group.add(topsphere);
+group.add(glowMesh);
 
 scene.add(group);
 
