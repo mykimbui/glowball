@@ -1,19 +1,4 @@
-// import { Scene, PerspectiveCamera, WebGLRenderer, Mesh, BoxGeometry, MeshBasicMaterial } from 'three';
-// import { Interaction } from 'three.interaction';
-
-// const path = "textures/";
-// const format = '.jpg';
-// const urls = [
-// path + 'px' + format, path + 'nx' + format,
-// path + 'py' + format, path + 'ny' + format,
-// path + 'pz' + format, path + 'nz' + format
-// ];
-
-// const textureCube = new THREE.CubeTextureLoader().load( urls );
-// textureCube.format = THREE.RGBFormat;
-
 const scene = new THREE.Scene();
-// scene.background = textureCube;
 var windowHalfX = window.innerWidth / 2;
 var windowHalfY = window.innerHeight / 2;
 
@@ -33,22 +18,29 @@ const interaction = new THREE.Interaction(renderer, scene, camera);
 const controls = new THREE.OrbitControls(camera, renderer.domElement);
 controls.update();
 
+const ambientLight = new THREE.AmbientLight(0xffffff);
+scene.add(ambientLight);
+
+const pointLight = new THREE.PointLight(0xff0000);
+pointLight.position.set( 50, 50, 50 );
+scene.add(pointLight);
+
 const group = new THREE.Object3D();
 
-const geometry = new THREE.SphereGeometry(5, 32, 32);
-
-// const shader = THREE.FresnelShader;
-// const uniforms = THREE.UniformsUtils.clone(shader.uniforms);
+const geometry = new THREE.SphereGeometry(0.1, 32, 32);
 
 const loader = new THREE.TextureLoader();
 loader.setCrossOrigin("");
 const matcap = loader.load("matcap2.jpg");
+const matcaptop = loader.load("matcap-top.png");
+
 
 const material = new THREE.ShaderMaterial({
   transparent: true,
   side: THREE.DoubleSide,
   uniforms: {
-    tMatCap: { type: "t", value: matcap }
+    tMatCap: { type: "t", value: matcap },
+    uOpacity: 0.1
   },
   vertexShader: document.getElementById("vertexShader").textContent,
   fragmentShader: document.getElementById("fragmentShader").textContent,
@@ -57,16 +49,19 @@ const material = new THREE.ShaderMaterial({
 
 const sphere = new THREE.Mesh(geometry, material);
 
-const topgeometry = new THREE.SphereGeometry(15, 32, 32, 0, 6.3, 0, 2.3);
-const topmaterial = new THREE.MeshBasicMaterial({
-  color: 0xffffff,
-  transparent: true,
-  opacity: 0.2
+const topgeometry = new THREE.SphereGeometry(15, 32, 32);
+const topmaterial = new THREE.ShaderMaterial({
+  uniforms: {
+    tMatCap: { type: "t", value: matcaptop }
+  },
+  fragmentShader: document.getElementById("fragmentShader").textContent,
+  vertexShader: document.getElementById("vertexShader").textContent
 });
+
 
 const topsphere = new THREE.Mesh(topgeometry, topmaterial);
 
-topsphere.position.z = 0;
+topsphere.position.x = 2;
 
 group.add(sphere);
 group.add(topsphere);
@@ -94,11 +89,10 @@ function onDocumentMouseMove(event) {
   mouseY = (event.clientY - windowHalfY) * 10;
 }
 
+let k = 3;
+
 const update = function() {
   const time = performance.now() * 0.001;
-
-  let k = 10;
-
   for (let i = 0; i < sphere.geometry.vertices.length; i++) {
     let p = sphere.geometry.vertices[i];
     let d = topsphere.geometry.vertices[i];
@@ -112,23 +106,8 @@ const update = function() {
 };
 
 sphere.on("click", function() {
-    const time = performance.now() * 0.001;
-
-    let k = 0;
-    k++
-    console.log(k++)
-
-    for (let i = 0; i < sphere.geometry.vertices.length; i++) {
-      let p = sphere.geometry.vertices[i];
-      let d = topsphere.geometry.vertices[i];
-      p.normalize().multiplyScalar(
-        1 + 0.05 * noise.perlin3(p.x * k + time, p.y * k, p.z * k)
-      );
-      d.normalize().multiplyScalar(
-        1 + 0.05 * noise.perlin3(p.x * k + time, p.y * k, p.z * k)
-      );
-    }
-
+  k += 1;
+  console.log(k);
 });
 
 const animate = function() {
@@ -142,12 +121,12 @@ const animate = function() {
   sphere.geometry.normalsNeedUpdate = true;
   sphere.geometry.verticesNeedUpdate = true;
 
-  // topsphere.geometry.computeVertexNormals();
-  // topsphere.geometry.normalsNeedUpdate = true;
-  // topsphere.geometry.verticesNeedUpdate = true;
+  topsphere.geometry.computeVertexNormals();
+  topsphere.geometry.normalsNeedUpdate = true;
+  topsphere.geometry.verticesNeedUpdate = true;
 
   sphere.rotation.y += 0.01;
-  // topsphere.rotation.y += 0.015;
+  topsphere.rotation.y += 0.015;
 
   renderer.render(scene, camera);
 };
